@@ -24,7 +24,7 @@
     "fields": {
       "attr": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "dialect_identifier",
@@ -71,6 +71,29 @@
     }
   },
   {
+    "type": "constraint_body",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "expr",
+          "named": true
+        },
+        {
+          "type": "return_stmt",
+          "named": true
+        },
+        {
+          "type": "variable_stmt",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "constraint_decl",
     "named": true,
     "fields": {
@@ -96,9 +119,17 @@
       }
     },
     "children": {
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "types": [
+        {
+          "type": "code_string",
+          "named": true
+        },
+        {
+          "type": "constraint_body",
+          "named": true
+        },
         {
           "type": "return_type",
           "named": true
@@ -304,7 +335,7 @@
     "fields": {
       "op": {
         "multiple": false,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "dialect_identifier",
@@ -497,6 +528,21 @@
     }
   },
   {
+    "type": "return_stmt",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "value",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "return_type",
     "named": true,
     "fields": {
@@ -603,6 +649,14 @@
         {
           "type": "op_constraint",
           "named": true
+        },
+        {
+          "type": "value_constraint",
+          "named": true
+        },
+        {
+          "type": "value_range_constraint",
+          "named": true
         }
       ]
     }
@@ -677,6 +731,38 @@
           },
           {
             "type": "number",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "value_constraint",
+    "named": true,
+    "fields": {
+      "op": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "dialect_identifier",
+            "named": true
+          }
+        ]
+      }
+    }
+  },
+  {
+    "type": "value_range_constraint",
+    "named": true,
+    "fields": {
+      "op": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "dialect_identifier",
             "named": true
           }
         ]
@@ -778,6 +864,14 @@
     "named": false
   },
   {
+    "type": "Type",
+    "named": false
+  },
+  {
+    "type": "TypeRange",
+    "named": false
+  },
+  {
     "type": "Value",
     "named": false
   },
@@ -796,6 +890,10 @@
   {
     "type": "benefit",
     "named": false
+  },
+  {
+    "type": "code_string",
+    "named": true
   },
   {
     "type": "comment",
@@ -841,6 +939,10 @@
   },
   {
     "type": "replace",
+    "named": false
+  },
+  {
+    "type": "return",
     "named": false
   },
   {

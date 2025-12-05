@@ -6,8 +6,8 @@
 [
   "("
   ")"
-  "["
-  "]"
+  ; "["
+  ; "]"
   "{"
   "}"
   "<"
@@ -25,41 +25,41 @@
   ":"
 ] @operator
 
-[
-  "="
-  "!cond"
-  (operator_keyword)
-] @function
+; [
+;   "="
+;   (operator_keyword)
+; ] @function
 
-(var) @variable
+(variable_stmt (identifier)) @variable
 
-(template_arg (identifier) @variable.parameter)
+; (template_arg (identifier) @variable.parameter)
 
-(_ argument: (value (identifier) @variable.parameter))
+; (_ argument: (value (identifier) @variable.parameter))
 
-(type) @type
-
-"code" @type.builtin
+(type_constraint) @type
 
 (number) @constant.numeric.integer
 [
   (string_string)
-  (code_string)
+  ; (code_string)
 ] @string
 
-(preprocessor) @keyword.directive
+(directive) @keyword.directive
 
 [
- "Pattern",
- "Constraint",
- "Attr",
- "Value",
- "ValueRange",
+ "Pattern"
+ "Constraint"
+ "Attr"
+ "Value"
+ "ValueRange"
+ "Type"
+ "TypeRange"
+ "Op"
 ] @type.builtin
 
 [
- "with",
- "benefit",
+ "with"
+ "benefit"
 ] @keyword
 
 [
@@ -68,13 +68,11 @@
   "attr"
   "replace"
   "rewrite"
+  "erase"
+  "return"
 ] @keyword.operator
 
 "include" @keyword.control.import
 
-[
-  "multiclass"
-  "defm"
-] @namespace
 
 (ERROR) @error

@@ -1,0 +1,67 @@
+==================
+Basic Pattern
+==================
+
+Pattern {
+  let root = op<my_dialect.foo>;
+
+  erase root;
+}
+
+---
+
+(file
+    (statement
+        (pattern_decl
+            (pattern_body
+                (pattern_match_section
+                    (variable_stmt
+                        (identifier)
+                        (constraint_expr
+                            (expr
+                                (op_expression
+                                    (dialect_identifier))))))
+                (pattern_rewrite_section
+                    (pattern_rewrite_stmt
+                        (erase_stmt
+                            (value
+                                (identifier)))))))))
+
+==================
+Slightly more complex Pattern
+==================
+
+Pattern {
+  // ** match section ** //
+  let arg: Value;
+  let root = op<my_dialect.foo>;
+
+  // ** rewrite section ** //
+  replace root with arg;
+}
+
+---
+
+(file
+    (statement
+        (pattern_decl
+            (comment)
+            (pattern_body
+                (pattern_match_section
+                    (variable_stmt
+                        (identifier)
+                        (type_constraint (value_constraint)))
+                    (variable_stmt
+                        (identifier)
+                        (constraint_expr
+                            (expr
+                                (op_expression
+                                    (dialect_identifier))))))
+            (comment)
+            (pattern_rewrite_section
+                (pattern_rewrite_stmt
+                    (replace_stmt
+                        (value
+                            (identifier))
+                        (value
+                            (identifier)))))))))

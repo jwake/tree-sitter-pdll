@@ -1,0 +1,23 @@
+{
+  "grammars": [
+    {
+      "name": "pdll",
+      "camelcase": "PDLL",
+      "fileTypes": ["pdll"],
+      "scopeName": "source.pdll",
+      "language": "pdll",
+      "path": "."
+    }
+  ],
+  "tree-sitter": [
+    {
+      "scope": "source.pdll",
+      "injection-regex": "^pdll$",
+      "file-types": ["pdll"]
+    }
+  ],
+  "metadata": {
+    "version": "0.0.1",
+    "name": "tree-sitter-pdll"
+  }
+}

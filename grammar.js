@@ -45,13 +45,29 @@ module.exports = grammar({
       ),
 
     type_constraint: ($) =>
-      choice("Value", "ValueRange", $.op_constraint, $.attr_constraint),
+      choice(
+        "Type",
+        "TypeRange",
+        $.value_constraint,
+        $.value_range_constraint,
+        $.op_constraint,
+        $.attr_constraint,
+      ),
+
+    value_constraint: ($) =>
+      seq("Value", optional(seq("<", field("op", $.dialect_identifier), ">"))),
+
+    value_range_constraint: ($) =>
+      seq(
+        "ValueRange",
+        optional(seq("<", field("op", $.dialect_identifier), ">")),
+      ),
 
     op_constraint: ($) =>
-      seq("Op", "<", field("op", $.dialect_identifier), ">"),
+      seq("Op", optional(seq("<", field("op", $.dialect_identifier), ">"))),
 
     attr_constraint: ($) =>
-      seq("Attr", "<", field("attr", $.dialect_identifier), ">"),
+      seq("Attr", optional(seq("<", field("attr", $.dialect_identifier), ">"))),
 
     // Top-level statements
     statement: ($) =>
@@ -186,6 +202,7 @@ module.exports = grammar({
         ")",
         "->",
         $.return_type,
+        choice(seq("{", $.constraint_body, "}"), $.code_string, ";"),
       ),
 
     constraint: ($) =>
@@ -194,272 +211,12 @@ module.exports = grammar({
         seq("(", commaSep(field("name", $.identifier)), ")"),
       ),
 
+    return_stmt: ($) =>
+      seq("return", choice($.value, seq("(", commaSep($.value), ")")), ";"),
+
+    constraint_body: ($) =>
+      repeat1(choice($.variable_stmt, $.expr, $.return_stmt)),
     rewrite_decl: ($) => "sdfdssfdssd",
-
-    // result: ($) =>
-    //   choice(
-    //     field("type", $.type),
-    //     seq("(", commaSep(field("type", $.arg)), ")"),
-    //   ),
-
-    // statement_or_block: ($) =>
-    //   choice($.statement, seq("{", repeat($.statement), "}")),
-
-    // class: ($) =>
-    //   seq(
-    //     "class",
-    //     field("name", $.identifier),
-    //     optional($.template_args),
-    //     optional($.parent_class_list),
-    //     field("body", $.record_body),
-    //   ),
-
-    // parent_class_list: ($) =>
-    //   seq(":", commaSep1(seq($.identifier, optional($.argument_list)))),
-
-    // argument_list: ($) =>
-    //   seq(
-    //     "<",
-    //     commaSep(
-    //       field("argument", seq(optional(seq($.identifier, "=")), $.value)),
-    //     ),
-    //     ">",
-    //   ),
-
-    // template_args: ($) =>
-    //   seq("<", commaSep(field("argument", $.template_arg)), ">"),
-
-    // template_arg: ($) => seq($.type, $.identifier, optional(seq("=", $.value))),
-
-    // record_body: ($) => choice(";", seq("{", repeat($.body_item), "}")),
-
-    // body_item: ($) =>
-    //   choice($.instruction, $.let_inst, $.def_var, $.assert, $.dump),
-
-    // instruction: ($) =>
-    //   seq(
-    //     optional("field"), // deprecated
-    //     choice($.type, "code"),
-    //     $.identifier,
-    //     optional(seq("=", $.value)),
-    //     ";",
-    //   ),
-
-    // let_inst: ($) =>
-    //   seq(
-    //     "let",
-    //     $.identifier,
-    //     optional(seq("{", commaSep($.value), "}")),
-    //     "=",
-    //     $.value,
-    //     ";",
-    //   ),
-
-    // def_var: ($) => seq("defvar", $.identifier, "=", $.value, ";"),
-
-    // def: ($) =>
-    //   seq(
-    //     "def",
-    //     optional($.value),
-    //     optional($.parent_class_list),
-    //     field("body", $.record_body),
-    //   ),
-
-    // let: ($) =>
-    //   seq(
-    //     "let",
-    //     commaSep1($.let_item),
-    //     "in",
-    //     choice($.statement, seq("{", repeat($.statement), "}")),
-    //   ),
-
-    // let_item: ($) =>
-    //   seq(
-    //     $.identifier,
-    //     optional(seq("<", commaSep($.value), ">")),
-    //     "=",
-    //     $.value,
-    //   ),
-
-    // multiclass: ($) =>
-    //   seq(
-    //     "multiclass",
-    //     $.identifier,
-    //     optional($.template_args),
-    //     optional($.parent_class_list),
-    //     field("body", $.multiclass_body),
-    //   ),
-
-    // multiclass_body: ($) =>
-    //   choice(";", seq("{", repeat($.multiclass_statement), "}")),
-
-    // multiclass_statement: ($) =>
-    //   choice($.assert, $.def, $.defm, $.defvar, $.foreach, $.if, $.let, $.dump),
-
-    // defm: ($) => seq("defm", optional($.value), $.parent_class_list, ";"),
-
-    // defset: ($) =>
-    //   seq("defset", $.type, $.identifier, "=", "{", repeat($.statement), "}"),
-
-    // defvar: ($) => seq("defvar", $.identifier, "=", $.value, ";"),
-
-    // deftype: ($) => seq("deftype", $.identifier, "=", $.type, ";"),
-
-    // foreach: ($) =>
-    //   seq("foreach", $.identifier, "=", $.value, "in", $.statement_or_block),
-
-    // if: ($) =>
-    //   prec.left(
-    //     seq(
-    //       "if",
-    //       $.value,
-    //       "then",
-    //       $.statement_or_block,
-    //       optional(seq("else", $.statement_or_block)),
-    //     ),
-    //   ),
-
-    // assert: ($) => seq("assert", $.value, ",", $.value, ";"),
-
-    // type: ($) =>
-    //   choice(
-    //     "bit",
-    //     "int",
-    //     "string",
-    //     "dag",
-    //     seq("bits", "<", $.number, ">"),
-    //     seq("list", "<", $.type, ">"),
-    //     $.identifier, // class
-    //   ),
-
-    // value: ($) =>
-    //   choice(seq($._simple_value, repeat($.value_suffix)), $._value_concat),
-
-    // _value_concat: ($) =>
-    //   seq($.value, repeat1(prec.left(seq("#", optional($.value))))),
-
-    // _simple_value: ($) =>
-    //   choice(
-    //     $.number,
-    //     $.identifier,
-    //     $.string_string,
-    //     $._repeated_string,
-    //     $.code_string,
-    //     "true",
-    //     "false",
-    //     "?",
-    //     seq("{", commaSep($.value), optional(","), "}"),
-    //     seq(
-    //       "[",
-    //       commaSep($.value),
-    //       optional(","),
-    //       "]",
-    //       optional(seq("<", $.type, ">")),
-    //     ),
-    //     seq("(", $.dag_arg, commaSep($.dag_arg), ")"),
-    //     seq($.identifier, "<", commaSep(field("argument", $.value)), ">"),
-    //     $.operator,
-    //   ),
-
-    // _repeated_string: ($) => repeat1($.string_string),
-
-    // operator: ($) =>
-    //   choice(
-    //     seq(
-    //       $.operator_keyword,
-    //       optional(seq("<", $.type, ">")),
-    //       "(",
-    //       commaSep(field("argument", $.value)),
-    //       optional(","),
-    //       ")",
-    //     ),
-    //     seq(
-    //       "!cond",
-    //       "(",
-    //       commaSep(field("argument", seq($.value, ":", $.value))),
-    //       optional(","),
-    //       ")",
-    //     ),
-    //   ),
-
-    // dag_arg: ($) => choice(seq($.value, optional(seq(":", $.var))), $.var),
-
-    // value_suffix: ($) =>
-    //   prec(
-    //     1,
-    //     choice(
-    //       seq("{", commaSep($.value), "}"),
-    //       seq("[", commaSep($.value), optional(","), "]"),
-    //       $.argument_list,
-    //       seq(".", $.identifier),
-    //       seq(choice("...", "-"), $.value),
-    //     ),
-    //   ),
-
-    // dump: ($) => seq("dump", $.value, ";"),
-
-    // // Not including !cond
-    // operator_keyword: ($) =>
-    //   seq(
-    //     "!",
-    //     token.immediate(
-    //       choice(
-    //         "add",
-    //         "and",
-    //         "cast",
-    //         "con",
-    //         "cond",
-    //         "dag",
-    //         "div",
-    //         "empty",
-    //         "eq",
-    //         "exists",
-    //         "filter",
-    //         "find",
-    //         "foldl",
-    //         "foreach",
-    //         "ge",
-    //         "getdagarg",
-    //         "getdagname",
-    //         "getdagop",
-    //         "getop",
-    //         "gt",
-    //         "head",
-    //         "if",
-    //         "interleave",
-    //         "isa",
-    //         "le",
-    //         "listconcat",
-    //         "listflatten",
-    //         "listremove",
-    //         "listsplat",
-    //         "logtwo",
-    //         "lt",
-    //         "mul",
-    //         "ne",
-    //         "not",
-    //         "or",
-    //         "range",
-    //         "repr",
-    //         "setdagarg",
-    //         "setdagname",
-    //         "setdagop",
-    //         "setop",
-    //         "shl",
-    //         "size",
-    //         "sra",
-    //         "srl",
-    //         "strconcat",
-    //         "sub",
-    //         "subst",
-    //         "substr",
-    //         "tail",
-    //         "tolower",
-    //         "toupper",
-    //         "xor",
-    //       ),
-    //     ),
-    //   ),
   },
 });
 

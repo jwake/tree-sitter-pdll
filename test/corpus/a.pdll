@@ -1,0 +1,5 @@
+Pattern {
+  let root = op<my_dialect.foo>;
+
+  erase root;
+}
